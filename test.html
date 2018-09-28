@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<canvas id="canvas" style="display:block;">
+    当前浏览器不支持Canvas，请更换浏览器后再试
+</canvas>
+ 
+<script>
+// 获取窗口宽度
+if (window.innerWidth)
+winWidth = window.innerWidth;
+else if ((document.body) && (document.body.clientWidth))
+winWidth = document.body.clientWidth;
+// 获取窗口高度
+if (window.innerHeight)
+winHeight = window.innerHeight;
+else if ((document.body) && (document.body.clientHeight))
+winHeight = document.body.clientHeight;
+// 通过深入 Document 内部对 body 进行检测，获取窗口大小
+if (document.documentElement && document.documentElement.clientHeight && document.documentElement.clientWidth)
+{
+winHeight = document.documentElement.clientHeight;
+winWidth = document.documentElement.clientWidth;
+}
+
+    var balls = [];
+    window.onload = function(){
+        var canvas = document.getElementById("canvas");
+        var  context=canvas.getContext('2d');
+        canvas.width = winWidth;
+        canvas.height = winHeight;
+        for(var i=0;i<100;i++){
+            var R=Math.floor(Math.random()*255);//可对一个数进行下舍入。0.1就是0    0.9就是1
+            var G=Math.floor(Math.random()*255);
+            var B=Math.floor(Math.random()*255);
+            var radius=Math.random()*50+20;
+            aBall={
+                color:"rgb("+R+","+G+","+B+")",
+                radius:radius,
+                x:Math.random()*(canvas.width-2*radius)+radius,
+                y:Math.random()*(canvas.height-2*radius)+radius,
+                vx:(Math.random()*5+5)*Math.pow(-1,Math.floor(Math.random()*100)),//pow() 方法可返回 x 的 y 次幂的值。
+                vy:(Math.random()*5+5)*Math.pow(-1,Math.floor(Math.random()*100))
+            }
+            balls[i]=aBall;
+        }
+        setInterval(
+            function(){
+                draw(context);
+                update(canvas.width,canvas.height);
+            },
+            50
+        );  
+    } 
+    function draw(ctx){
+        var canvas = ctx.canvas;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        for( var i = 0 ; i < balls.length ; i ++ ){
+            ctx.globalCompositeOperation="xor";//lighter
+            ctx.fillStyle=balls[i].color;
+            ctx.beginPath();
+            ctx.arc(balls[i].x,balls[i].y,balls[i].radius,0,2*Math.PI);
+            ctx.closePath();
+            ctx.fill();
+        }
+    }
+    function update(canvasWidth, canvasHight){
+        for( var i = 0 ; i < balls.length ; i ++ ){
+ 
+            balls[i].x += balls[i].vx;
+            balls[i].y += balls[i].vy;
+ 
+            if( balls[i].x - balls[i].radius<=0 ){
+                balls[i].vx = -balls[i].vx;
+                balls[i].x = balls[i].radius;
+            }
+            if( balls[i].x + balls[i].radius>=canvasWidth ){
+                balls[i].vx = -balls[i].vx;
+                balls[i].x = canvasWidth-balls[i].radius;
+            }
+            if( balls[i].y - balls[i].radius<=0 ){
+                balls[i].vy = -balls[i].vy;
+                balls[i].y = balls[i].radius;
+            }
+            if( balls[i].y + balls[i].radius>=canvasHight ){
+                balls[i].vy = -balls[i].vy;
+                balls[i].y = canvasHight-balls[i].radius;
+            }
+        }
+    }
+</script>
+</body>
+</html>
